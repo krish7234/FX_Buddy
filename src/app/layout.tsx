@@ -1,19 +1,19 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Geist, Geist_Mono } from "next/font/google"
+// import { GeistSans, GeistMono } from ""
 import "./globals.css"
 
-const geistSans = Geist({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-geist-sans",
-})
+// const geistSans = GeistSans({
+//   subsets: ["latin"],
+//   display: "swap",
+//   variable: "--font-geist-sans",
+// })
 
-const geistMono = Geist_Mono({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-geist-mono",
-})
+// const geistMono = GeistMono({
+//   subsets: ["latin"],
+//   display: "swap",
+//   variable: "--font-geist-mono",
+// })
 
 export const metadata: Metadata = {
   title: "FX Buddy - Professional Forex Trading Platform",
@@ -27,7 +27,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+    <html lang="en" className={`antialiased`}>
       <body className="bg-aquatic-gradient min-h-screen">{children}</body>
     </html>
   )
