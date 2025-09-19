@@ -1,42 +1,53 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Eye, EyeOff, Loader2 } from "lucide-react"
-import Link from "next/link"
-import { motion } from "framer-motion"
-import { TwoFactorModal } from "@/components/auth/two-factor-modal"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { TwoFactorModal } from "@/components/auth/two-factor-modal";
+import { login } from "@/services/api";
 
 export function LoginForm() {
-  const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [show2FA, setShow2FA] = useState(false)
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [show2FA, setShow2FA] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-  })
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const res = await login(formData.email, formData.password);
+      console.log("Login successful:", res);
+      localStorage.setItem("token", res.access_token);
+    } catch (err: any) {
+      alert("Login failed: " + err.message);
+    } finally {
+      setIsLoading(false);
+    }
 
     // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false)
-      setShow2FA(true) // Show 2FA modal for demo
-    }, 1500)
-  }
+    // setTimeout(() => {
+    //   setIsLoading(false);
+    //   setShow2FA(true); // Show 2FA modal for demo
+    // }, 1500);
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
-    })
-  }
+    });
+  };
 
   return (
     <>
@@ -85,14 +96,21 @@ export function LoginForm() {
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
             >
-              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              {showPassword ? (
+                <EyeOff className="h-4 w-4" />
+              ) : (
+                <Eye className="h-4 w-4" />
+              )}
             </button>
           </div>
         </div>
 
         {/* Forgot Password */}
         <div className="flex justify-end">
-          <Link href="/forgot-password" className="text-sm text-accent hover:text-accent/80 transition-colors">
+          <Link
+            href="/forgot-password"
+            className="text-sm text-accent hover:text-accent/80 transition-colors"
+          >
             Forgot your password?
           </Link>
         </div>
@@ -127,7 +145,10 @@ export function LoginForm() {
         <div className="text-center">
           <p className="text-sm text-muted-foreground">
             Don't have an account?{" "}
-            <Link href="/register" className="text-accent hover:text-accent/80 font-medium transition-colors">
+            <Link
+              href="/register"
+              className="text-accent hover:text-accent/80 font-medium transition-colors"
+            >
               Create one now
             </Link>
           </p>
@@ -136,5 +157,5 @@ export function LoginForm() {
 
       <TwoFactorModal isOpen={show2FA} onClose={() => setShow2FA(false)} />
     </>
-  )
+  );
 }
