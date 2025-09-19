@@ -11,6 +11,9 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { TwoFactorModal } from "@/components/auth/two-factor-modal";
 import { login } from "@/services/api";
+import { useRouter } from "next/navigation";
+
+const router = useRouter();
 
 export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -29,6 +32,7 @@ export function LoginForm() {
       const res = await login(formData.email, formData.password);
       console.log("Login successful:", res);
       localStorage.setItem("token", res.access_token);
+      router.push("/dashboard");
     } catch (err: any) {
       alert("Login failed: " + err.message);
     } finally {
