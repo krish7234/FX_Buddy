@@ -1,23 +1,30 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Eye, EyeOff, Loader2 } from "lucide-react"
-import Link from "next/link"
-import { motion } from "framer-motion"
-import { TermsModal } from "@/components/auth/terms-modal"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { TermsModal } from "@/components/auth/terms-modal";
+import { signup } from "@/services/api";
 
 export function RegisterForm() {
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [showTerms, setShowTerms] = useState(false)
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -25,34 +32,48 @@ export function RegisterForm() {
     confirmPassword: "",
     accountType: "",
     agreeToTerms: false,
-  })
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords don't match!")
-      return
+      alert("Passwords don't match!");
+      return;
     }
     if (!formData.agreeToTerms) {
-      alert("Please agree to the terms and conditions")
-      return
+      alert("Please agree to the terms and conditions");
+      return;
     }
 
-    setIsLoading(true)
+    setIsLoading(true);
+
+    try {
+      const res = await signup(
+        formData.fullName,
+        formData.email,
+        formData.password
+      );
+      console.log("Signup successful:", res);
+      alert("Account created successfully!");
+    } catch (err: any) {
+      alert("Signup failed: " + err.message);
+    } finally {
+      setIsLoading(false);
+    }
 
     // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false)
-      alert("Account created successfully!")
-    }, 2000)
-  }
+    // setTimeout(() => {
+    //   setIsLoading(false)
+    //   alert("Account created successfully!")
+    // }, 2000)
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
-    })
-  }
+    });
+  };
 
   return (
     <>
@@ -118,7 +139,11 @@ export function RegisterForm() {
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
             >
-              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              {showPassword ? (
+                <EyeOff className="h-4 w-4" />
+              ) : (
+                <Eye className="h-4 w-4" />
+              )}
             </button>
           </div>
         </div>
@@ -144,7 +169,11 @@ export function RegisterForm() {
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
             >
-              {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              {showConfirmPassword ? (
+                <EyeOff className="h-4 w-4" />
+              ) : (
+                <Eye className="h-4 w-4" />
+              )}
             </button>
           </div>
         </div>
@@ -156,13 +185,17 @@ export function RegisterForm() {
           </Label>
           <Select
             value={formData.accountType}
-            onValueChange={(value) => setFormData({ ...formData, accountType: value })}
+            onValueChange={(value) =>
+              setFormData({ ...formData, accountType: value })
+            }
           >
             <SelectTrigger className="bg-input border-border focus:ring-accent focus:border-accent">
               <SelectValue placeholder="Select account type" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="demo">Demo Account (Practice Trading)</SelectItem>
+              <SelectItem value="demo">
+                Demo Account (Practice Trading)
+              </SelectItem>
               <SelectItem value="real">Real Account (Live Trading)</SelectItem>
             </SelectContent>
           </Select>
@@ -173,11 +206,16 @@ export function RegisterForm() {
           <Checkbox
             id="terms"
             checked={formData.agreeToTerms}
-            onCheckedChange={(checked) => setFormData({ ...formData, agreeToTerms: checked as boolean })}
+            onCheckedChange={(checked) =>
+              setFormData({ ...formData, agreeToTerms: checked as boolean })
+            }
             className="mt-1"
           />
           <div className="text-sm">
-            <Label htmlFor="terms" className="text-card-foreground cursor-pointer">
+            <Label
+              htmlFor="terms"
+              className="text-card-foreground cursor-pointer"
+            >
               I agree to the{" "}
               <button
                 type="button"
@@ -221,7 +259,10 @@ export function RegisterForm() {
         <div className="text-center">
           <p className="text-sm text-muted-foreground">
             Already have an account?{" "}
-            <Link href="/login" className="text-accent hover:text-accent/80 font-medium transition-colors">
+            <Link
+              href="/login"
+              className="text-accent hover:text-accent/80 font-medium transition-colors"
+            >
               Sign in here
             </Link>
           </p>
@@ -230,5 +271,5 @@ export function RegisterForm() {
 
       <TermsModal isOpen={showTerms} onClose={() => setShowTerms(false)} />
     </>
-  )
+  );
 }
